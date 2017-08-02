@@ -35,46 +35,52 @@ class Image
   end
 
   def blur_image
-    self.blur_horizontal
-    self.blur_vertical
+    get_pixel_coordinates.each do |row, column|
+      self.blur_left(row, column)
+      self.blur_right(row,column)
+      self.blur_top(row,column)
+      self.blur_bottom(row,column)
+    end
   end
 
-  def blur_horizontal
+  def blur_left(row, column)
     # iterate through each pixel location
-    @pixel_array.each_with_index do |row_array,row_index|
+      if @image_data[row][column-1]
+        @image_data[row][column-1] = 1
+      end
 
-      row = row_array[0] # return row location
-      left_blur = row_array[1] - 1  # return left blur column value
-      right_blur = row_array[1] + 1 # return right blur column value
-
-      @image_data[row][left_blur] = 1 unless left_blur < 0 # handle left blur edge case
-      @image_data[row][right_blur] = 1 unless right_blur > @image_data.first.length - 1 # handle right blur edge case
+      
       
       #print "Row #{row} - #{left_blur}\n"
-      #print "Row #{row} - #{right_blur}\n"
-    end
+      #print "Row #{row} - #{right_blur}\n
   end
 
-  def blur_vertical
-    # iterate through each pixel location
-    @pixel_array.each_with_index do |row_array,row_index|
+  def blur_right(row, column)
+  # iterate through each pixel location
 
-      column = row_array[1] # return fixed column
-      row_top_blur = row_array[0] - 1 # return top row location
-      row_bottom_blur = row_array[0] + 1 # return bottom row location
-
-      if row_top_blur > 0 
-        @image_data[row_top_blur][column] = 1
-      end
-
-      if row_bottom_blur <= @image_data.length-1
-        @image_data[row_bottom_blur][column] = 1
-      end
-      
-      #print "Row #{row_top_blur} - #{column}\n"
-      #print "Row #{row_bottom_blur} - #{column}\n"
+    if @image_data[row][column + 1]
+      @image_data[row][column + 1] = 1 
     end
+    
+    #print "Row #{row} - #{left_blur}\n"
+    #print "Row #{row} - #{right_blur}\n
   end
+
+  def blur_top(row,column)
+    
+    if @image_data[row - 1][column]
+      @image_data[row - 1][column] = 1
+    end
+
+  end
+
+  def blur_bottom(row,column)
+    
+    if @image_data.length-1 > row + 1
+      @image_data[row + 1][column] = 1
+    end    
+  end
+
 
 end
 
