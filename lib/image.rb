@@ -15,8 +15,7 @@ class Image
       row_array.each_index do |column_index|
         pixel_value = @image_data[row_index][column_index]
         if pixel_value == 1
-          #puts "(#{row_index},#{column_index}) --> #{pixel_value}"
-          pixel_array << [row_index, column_index] # add pixel location to pixel array instance variable
+          pixel_array << [row_index, column_index]
         end
       end
     end
@@ -44,54 +43,45 @@ class Image
   end
 
   def blur_left(row, column)
-    # iterate through each pixel location
-      if @image_data[row][column-1]
+
+      if column > 0 && @image_data[row][column-1]
         @image_data[row][column-1] = 1
       end
-
-      
-      
-      #print "Row #{row} - #{left_blur}\n"
-      #print "Row #{row} - #{right_blur}\n
   end
 
   def blur_right(row, column)
-  # iterate through each pixel location
 
     if @image_data[row][column + 1]
       @image_data[row][column + 1] = 1 
     end
-    
-    #print "Row #{row} - #{left_blur}\n"
-    #print "Row #{row} - #{right_blur}\n
   end
 
   def blur_top(row,column)
     
-    if @image_data[row - 1][column]
+    if row > 0 && @image_data[row - 1][column]
       @image_data[row - 1][column] = 1
     end
 
   end
 
   def blur_bottom(row,column)
-    
-    if @image_data.length-1 > row + 1
+
+    if @image_data.length-1 >= row + 1
+
       @image_data[row + 1][column] = 1
     end    
   end
 
-
 end
 
 data = Image.new([
-  [1, 0, 0, 0, 1],
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 1],
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
-  [1, 0, 0, 0, 1]
+  [0, 0, 0, 0, 0]
 ])
 
 data.output_image
@@ -123,12 +113,3 @@ data.output_image
 # pixel edge case
 
 # pixels where transformation blur intersects
-
-
-#image = Image.new([
-#  [0, 0, 0, 0],
-#  [0, 1, 0, 0],
-#  [0, 0, 0, 1],
-#  [0, 0, 0, 0]
-#])
-#image.output_image
