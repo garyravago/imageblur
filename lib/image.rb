@@ -33,62 +33,88 @@ class Image
     end
   end
 
-  def blur_image
+  def blur(distance)
     get_pixel_coordinates.each do |row, column|
-      self.blur_left(row, column)
-      self.blur_right(row,column)
-      self.blur_top(row,column)
-      self.blur_bottom(row,column)
+      self.blur_left(row, column, distance)
+      self.blur_right(row,column, distance)
+      self.blur_top(row,column, distance)
+      self.blur_bottom(row,column, distance)
     end
   end
 
-  def blur_left(row, column)
+  def blur_left(row, column, distance)
+    start_pos = column-distance
+    if start_pos < 0
+      start_pos = 0
+    end
+    last_pos = column
 
-      if column > 0 && @image_data[row][column-1]
-        @image_data[row][column-1] = 1
-      end
-  end
+    i = start_pos
+    while i < last_pos
 
-  def blur_right(row, column)
-
-    if @image_data[row][column + 1]
-      @image_data[row][column + 1] = 1 
+      @image_data[row][i] = 1
+      i += 1
     end
   end
 
-  def blur_top(row,column)
+  def blur_right(row, column, distance)
+    start_pos = column+1
+    last_pos = column+distance
+    if last_pos > @image_data.first.length-1
+      last_pos = @image_data.first.length-1
+    end
+
+    i = start_pos
+    while i <= last_pos
+      @image_data[row][i] = 1
+      i += 1
+    end
+  end
+
+  def blur_top(row,column, distance)
+    start_row_pos = row-1
+    last_row_pos = row-distance
+    if last_row_pos < 0
+      last_row_pos = 0
+    end
+
+    i = start_row_pos
+    while i >= last_row_pos
+      @image_data[i][column] = 1
+      i -= 1
+    end
+  end
+
+  def blur_bottom(row,column,distance)
+    start_row_pos = row+1
+    last_row_pos = row+distance
     
-    if row > 0 && @image_data[row - 1][column]
-      @image_data[row - 1][column] = 1
+    if last_row_pos > @image_data.length-1
+      last_row_pos = @image_data.length-1
+    end 
+
+    i = start_row_pos
+    while i <= last_row_pos
+        @image_data[i][column] = 1
+        i += 1
     end
-
   end
-
-  def blur_bottom(row,column)
-
-    if @image_data.length-1 >= row + 1
-
-      @image_data[row + 1][column] = 1
-    end    
-  end
-
 end
 
 data = Image.new([
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1],
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0],
   [0, 0, 0, 0, 0]
 ])
 
 data.output_image
-data.blur_image
+data.blur(6)
 puts "------------------------------"
 data.output_image
-
 
 #data.image_data.each do |row|
 #  puts "#{row}"
