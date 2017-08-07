@@ -41,9 +41,9 @@ describe Image do
     end
   end
 
-  describe "blur transformation with arbitrary distance" do
+  describe "blur transformation with arbitrary distance on horizontal/vertical axis" do
     context "pixel or blur transformation does not go past any edges" do
-
+      
       it "changes the pixel's left adjacent elements by 2" do
         @sample_image = Image.new([
           [0, 0, 0, 1, 0],
@@ -164,6 +164,162 @@ describe Image do
         expect(@sample_image.image_data[4][2]).to eql(1)
         expect(@sample_image.image_data[0][2]).not_to eql(1) 
       end
+    end
+  end
+
+  describe "Manhattan blur transformation with arbitrary distance" do
+    context "transformation does not go past any edges" do
+      it "performs a Manhattan blur transformation" do
+        @sample_image = Image.new([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 1, 1, 1, 0, 0],
+        [0, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 0],
+        [0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0]
+        ])
+      end
+    end
+
+    context "pixel directly on edge and transformation exceeds edges" do
+      it "exceeds the left edge" do
+        @sample_image = Image.new([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [1, 0, 0, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0]])
+      end
+
+      it "exceeds the right edge" do
+        @sample_image = Image.new([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 1, 1],
+        [0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1],
+        [0, 0, 0, 0, 0, 0, 1]])
+      end
+
+      it "exceeds the top edge" do
+        @sample_image = Image.new([
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 0],
+        [0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])          
+      end
+
+      it "exceeds the bottom edge" do
+        @sample_image = Image.new([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 1, 1, 1, 0, 0],
+        [0, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1]])          
+      end
+    end
+
+    context "pixel not on edge and transformation exceeds vertical edges" do
+      it "exceeds the left edge" do
+        @sample_image = Image.new([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [0, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 0, 0, 0],
+        [1, 1, 1, 1, 1, 0, 0],
+        [1, 1, 1, 1, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0]])
+      end
+
+      it "exceeds the right edge" do
+        @sample_image = Image.new([
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]])
+
+        @sample_image.blur(3)
+        expect(@sample_image.image_data).to eq([
+        [0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1, 1],
+        [0, 0, 1, 1, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 0]])
+       end 
     end
   end
 end

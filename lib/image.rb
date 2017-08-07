@@ -35,29 +35,36 @@ class Image
 
   def blur(distance)
     get_pixel_coordinates.each do |row, column|
-      self.blur_left(row, column, distance)
-      self.blur_right(row,column, distance)
+      self.blur_left_side(row, column, distance)
+      self.blur_right_side(row,column, distance)
       self.blur_top(row,column, distance)
       self.blur_bottom(row,column, distance)
     end
   end
 
-  def blur_left(row, column, distance)
+  def blur_left_side(row, column, distance)
     start_pos = column-distance
-    if start_pos < 0
+    diagonal_distance = 1
+    if start_pos <= 0
+      diagonal_distance = start_pos.abs
       start_pos = 0
+    elsif start_pos > 0
+      diagonal_distance = 0
     end
     last_pos = column
 
     i = start_pos
+   
     while i < last_pos
-
       @image_data[row][i] = 1
+      self.blur_top(row,i, diagonal_distance)
+      self.blur_bottom(row, i, diagonal_distance)
+      diagonal_distance += 1
       i += 1
     end
   end
 
-  def blur_right(row, column, distance)
+  def blur_right_side(row, column, distance)
     start_pos = column+1
     last_pos = column+distance
     if last_pos > @image_data.first.length-1
@@ -65,8 +72,13 @@ class Image
     end
 
     i = start_pos
+    diagonal_distance = distance -1
     while i <= last_pos
       @image_data[row][i] = 1
+
+      self.blur_top(row,i, diagonal_distance)
+      self.blur_bottom(row, i, diagonal_distance)
+      diagonal_distance -= 1
       i += 1
     end
   end
@@ -95,27 +107,60 @@ class Image
 
     i = start_row_pos
     while i <= last_row_pos
-        @image_data[i][column] = 1
-        i += 1
+      @image_data[i][column] = 1
+      i += 1
     end
   end
 end
 
 data = Image.new([
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0],
-  [0, 0, 0, 0, 0]
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0]
 ])
 
 data.output_image
-data.blur(6)
+data.blur(3)
 puts "------------------------------"
 data.output_image
 
+puts "====================================="
+  data = Image.new([
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+  ])
+
+  data.output_image
+  data.blur(3)
+  puts "------------------------------"
+  data.output_image
+
+puts "====================================="
+  data = Image.new([
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0]
+  ])
+
+  puts "------------------------------"
+
+  data.output_image
+  data.blur(3)
+  puts "------------------------------"
+  data.output_image
 #data.image_data.each do |row|
 #  puts "#{row}"
 #end
